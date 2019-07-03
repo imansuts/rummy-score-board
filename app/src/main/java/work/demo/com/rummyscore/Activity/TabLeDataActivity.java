@@ -11,8 +11,6 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -122,23 +120,19 @@ public class TabLeDataActivity extends AppCompatActivity implements View.OnClick
         et.setId(id);
         et.setGravity(Gravity.CENTER);
         et.setTextColor(Color.WHITE);
+        try {
+            Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+            f.setAccessible(true);
+            f.set(et, R.drawable.cursor_drawable);
+        } catch (Exception ignored) {
+        }
 //        et.setInputType(InputType.TYPE_CLASS_NUMBER);
         et.setTextSize(16);
         et.setMaxLines(1);
         et.setInputType(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
 
-        /*Field f = null;
-        try {
-            f = TextView.class.getDeclaredField("mCursorDrawableRes");
-            f.setAccessible(true);
-            f.set(et, R.drawable.cursor_drawable);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }*/
-            /*--- OR ---*/
-        setCursorColor(et, Color.BLACK);
+        /*--- OR ---*/
+//        setCursorColor(et, Color.BLACK);
 
         et.setPadding(40, 40, 40, 40);
         et.setTypeface(Typeface.DEFAULT, typeface);
@@ -247,10 +241,10 @@ public class TabLeDataActivity extends AppCompatActivity implements View.OnClick
             Log.d("ck_name: ", playerModels.get(i).getName());
             Log.d("ck_score: ", playerModels.get(i).getScore());
 
-            if (TextUtils.isEmpty(playerModels.get(i).getScore())){
+            if (TextUtils.isEmpty(playerModels.get(i).getScore())) {
                 b_check_for_controller = true;
                 break;
-            }else {
+            } else {
                 try {
                     Integer.parseInt(playerModels.get(i).getScore());
                 } catch (Exception e) {
@@ -262,45 +256,45 @@ public class TabLeDataActivity extends AppCompatActivity implements View.OnClick
             }
         }
 
-        if (!b_check_for_controller){
+        if (!b_check_for_controller) {
             ControllerClassToSaveData controllerClassToSaveData = new ControllerClassToSaveData(context);
             controllerClassToSaveData.GetListOfPlayersWithHighestToLowOrder();
-        }else {
+        } else {
             Toast.makeText(context, "Wrong Value", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public static void setCursorColor(EditText view, @ColorInt int color) {
-        try {
-            // Get the cursor resource id
-            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
-            field.setAccessible(true);
-            int drawableResId = field.getInt(view);
+//    public static void setCursorColor(EditText view, @ColorInt int color) {
+//        try {
+//            // Get the cursor resource id
+//            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
+//            field.setAccessible(true);
+//            int drawableResId = field.getInt(view);
+//
+//            // Get the editor
+//            field = TextView.class.getDeclaredField("mEditor");
+//            field.setAccessible(true);
+//            Object editor = field.get(view);
+//
+//            // Get the drawable and set a color filter
+//            Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
+//            drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+//            Drawable[] drawables = {drawable, drawable};
+//
+//            // Set the drawables
+//            field = editor.getClass().getDeclaredField("mCursorDrawable");
+//            field.setAccessible(true);
+//            field.set(editor, drawables);
+//        } catch (Exception ignored) {
+//        }
+//    }
 
-            // Get the editor
-            field = TextView.class.getDeclaredField("mEditor");
-            field.setAccessible(true);
-            Object editor = field.get(view);
-
-            // Get the drawable and set a color filter
-            Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
-            drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            Drawable[] drawables = {drawable, drawable};
-
-            // Set the drawables
-            field = editor.getClass().getDeclaredField("mCursorDrawable");
-            field.setAccessible(true);
-            field.set(editor, drawables);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public void SetData(){
+    public void SetData() {
         playerModels = dataBase.getPlayerScores();
         for (int i = 1; i < tableLayout.getChildCount(); i++) {
             TableRow mRow = (TableRow) tableLayout.getChildAt(i);
 
-            ((TextView) mRow.getVirtualChildAt(2)).setText(playerModels.get(i-1).getScore());
+            ((TextView) mRow.getVirtualChildAt(2)).setText(playerModels.get(i - 1).getScore());
 
             Log.d("refresh_id: ", playerModels.get(i - 1).getId());
             Log.d("refresh_name: ", playerModels.get(i - 1).getName());
@@ -329,12 +323,12 @@ public class TabLeDataActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void run() {
-                check_for_close_activity=false;
+                check_for_close_activity = false;
             }
         }, 2000);
     }
 
-    public void DeleteAllDatabaseTable(){
+    public void DeleteAllDatabaseTable() {
         DataBase dataBase = new DataBase(context);
         dataBase.DeleteAllPlayerTable();
         dataBase.DeleteInfoTable();
